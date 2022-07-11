@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title><![CDATA[Users]]></title>
+        <description><![CDATA[The score board whit all the users.]]></description>
+        <link>http://github.com/dylang/node-rss</link>
+        <generator>RSS for Node</generator>
+        <lastBuildDate>Sat, 25 Jun 2022 09:12:00 GMT</lastBuildDate>
+        <author><![CDATA[GarT]]></author>
+        <item>
+            <title><![CDATA[George]]></title>
+            <guid isPermaLink="false">George</guid>
+            <dc:creator><![CDATA[GarT]]></dc:creator>
+            <points>5</points>
+        </item>
+    </channel>
+</rss>

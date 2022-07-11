@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="navStyle.css">
+  <link rel="stylesheet" href="loginStyle.css">
+  <title>Login</title>
+
+  <script src="Cookie.js"></script>
+
+  <script>
+    function myFunction() {
+      let x = document.getElementById("myTopnav");
+      if (x.className === "topnav") {
+        x.className += " responsive";
+      } else {
+        x.className = "topnav";
+      }
+    }
+
+
+    function validateEmail() {
+      const mail = document.getElementById("mail").value;
+      const regx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (regx.test(mail)) {
+        console.log("Correct email! " + mail);
+        return true;
+      }
+      else {
+        console.log("Incorect email! " + mail);
+      }
+    }
+
+    function validatePassword() {
+      const password = document.getElementById("password").value;
+
+      if (password == "") {
+        console.log("Incorect password!");
+        return false;
+      }
+      else
+        if (password.lenght < 8) {
+          console.log("Your password must be at at least 8 characters long");
+          return false;
+        }
+        else console.log("Correct password!");
+
+      return true;
+    }
+
+
+    async function validateLogin() {
+      const email = document.getElementById("mail").value;
+      const password = document.getElementById("password").value;
+
+      if (validateEmail() && validatePassword()) {
+
+        const data = { email: email, password: password };
+
+        console.log(data);
+        let message;
+        let token;
+        let idUser
+
+        let res = await fetch("http://localhost:5000/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Append": "*/*"
+          },
+          body: JSON.stringify(data)
+        }).then((response) => response.json())
+          .then((data) => {
+            message = data.message
+            idUser = data.id
+            token = data.token
+          })
+          .catch(error => console.log(error))
+
+        if (message === 'Authentication complete!') {
+          saveTheCookieForToken(token)
+          return true;
+        }
+        else {
+         let div=document.getElementById("errorMessage")
+         let ms=document.createTextNode(message)
+         div.appendChild(ms)
+          console.log(message)
+          return false;
+        }
+      }
+
+    }
+
+  </script>
+
+</head>
+
+<body>
+  <nav>
+    <div class='head'>
+      <h4>Gardening Tutor</h4>
+    </div>
+
+    <div class="topnav" id="myTopnav">
+
+      <a href="/">Home</a>
+
+      <div>
+  </nav>
+  <div class="body-text">
+    <h1>Login</h1>
+  </div>
+
+
+  <div class="login-page">
+    <div class="form">
+      <form class="login-form">
+        <input id="mail" type="text" placeholder="email address" />
+        <input id="password" type="password" placeholder="password" />
+        <p id="errorMessage" class="message"></p>
+        <button onclick="{
+
+        (async () => {
+        const valide=await validateLogin()
+
+      if(valide===true)
+            location.href='/home';  
+      })()
+      p=document.getElementById('errorMessage')
+      p.innerHTML=''
+          }" type="button">login</button>
+        <p class="message">Not registered? <a href="/register">Create an account</a></p>
+      </form>
+    </div>
+  </div>
+
+</body>
+
+</html>

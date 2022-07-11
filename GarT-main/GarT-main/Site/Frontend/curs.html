@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="curs.css">
+    <title>Gardening Web Tutor</title>
+
+    <script src="Cookie.js"></script>
+
+    <script>
+
+      
+        console.log(getTokenFromCookie())
+
+        function myFunction() {
+            var x = document.getElementById("myTopnav");
+            if (x.className === "topnav") {
+                x.className += " responsive";
+            } else {
+                x.className = "topnav";
+            }
+        }
+
+        let name
+        let url
+        let points
+
+        async function displayCourse() {
+
+            let idCourse = getIdCourseFromCookie()
+
+            let res = await fetch(`http://localhost:5000/api/course/${idCourse}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*"
+                },
+
+            }).then((response) => response.json())
+                .then((data) => {
+                    name = data.name
+                    url = data.url
+                    points = data.points
+                })
+                .catch(error => console.log(error))
+
+            console.log(url)
+            console.log(name)
+
+            document.getElementById('pdf').src = `${url}#view=fitH`;
+            document.getElementById('courseName').textContent = name;
+        }
+
+        let answers = []
+        let questions
+
+        async function displayQuestion() {
+
+            let idCourse = getIdCourseFromCookie()
+
+
+            let res = await fetch(`http://localhost:5000/api/course/${idCourse}/questions`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*"
+                },
+
+            }).then((response) => response.json())
+                .then((data) => {
+                    questions = data
+                })
+                .catch(error => console.log(error))
+
+            console.log(questions)
+
+
+            let ul = document.createElement('label')
+            let p = document.querySelector('.question')
+            p.appendChild(ul)
+
+            let index = 1
+            questions.forEach(question => {
+                let li = document.createElement('li')
+                let name = document.createTextNode(question.name)
+                li.appendChild(name)
+                li.setAttribute('id', `${question.number}`)
+                ul.appendChild(li)
+
+                let ul1 = document.createElement('ul')
+                let answer1 = document.createTextNode(question.answer1)
+                ul1.appendChild(answer1)
+                ul1.addEventListener("click", function (event) {
+                    const attr = ul1.parentElement.getAttribute('id');
+                    answers[attr] = 1
+                    console.log(answers)
+                });
+                li.appendChild(ul1)
+
+
+                let ul2 = document.createElement('ul')
+                let answer2 = document.createTextNode(question.answer2)
+                ul2.appendChild(answer2)
+                ul2.addEventListener("click", function (event) {
+                    const attr = ul2.parentElement.getAttribute('id');
+                    answers[attr] = 2
+                    console.log(answers)
+                });
+                li.appendChild(ul2)
+
+                let ul3 = document.createElement('ul')
+                let answer3 = document.createTextNode(question.answer3)
+                ul3.appendChild(answer3)
+                ul3.addEventListener("click", function (event) {
+                    const attr = ul3.parentElement.getAttribute('id');
+                    answers[attr] = 3
+                    console.log(answers)
+                });
+                li.appendChild(ul3)
+
+                let ul4 = document.createElement('ul')
+                let answer4 = document.createTextNode(question.answer4)
+                ul4.appendChild(answer4)
+                ul4.addEventListener("click", function (event) {
+                    const attr = ul4.parentElement.getAttribute('id');
+                    answers[attr] = 4
+                    console.log(answers)
+                });
+                li.appendChild(ul4)
+
+                index++;
+            })
+
+        }
+
+        async function setCourseDone() {
+            let idCourse = getIdCourseFromCookie()
+            let token = getTokenFromCookie()
+
+            let res = await fetch(`http://localhost:5000/api/user/course_done/${idCourse}/questions`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*",
+                    "Authorization": `Bearer ${token}`
+                },
+
+            }).then((response) => response.json())
+                .then((data) => { })
+                .catch(error => console.log(error))
+
+        }
+
+        async function checkCourse() {
+            let idCourse = getIdCourseFromCookie()
+            let token = getTokenFromCookie()
+            let done
+
+            let res = await fetch(`http://localhost:5000/api/user/course/${idCourse}`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*",
+                    "Authorization": `Bearer ${token}`
+                },
+
+            }).then((response) => response.json())
+                .then((data) => { done = data[0].done })
+                .catch(error => console.log(error))
+
+            console.log(done)
+
+            if (done == false)
+                return true
+            return false
+        }
+
+        async function addPointsToUser(pointsEarned) {
+
+            let token = getTokenFromCookie()
+
+            const data = { points: pointsEarned };
+            console.log(data.points)
+
+            let res = await fetch(`http://localhost:5000/api/user/points`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(data)
+
+            }).then((response) => response.json())
+                .then((data) => { })
+                .catch(error => console.log(error))
+        }
+
+        function checkAnswers() {
+            let p = document.querySelector('.response')
+            p.innerHTML = ""
+
+            let index = 1
+            let pointsEarned = 0;
+            questions.forEach(question => {
+                if (answers[index] == question.correct_answer)
+                    pointsEarned += question.points
+                index++
+            })
+
+            let h1 = document.createElement('h1')
+            h1.setAttribute('id', 'result')
+            let text = document.createTextNode(`Ai obtinut ${pointsEarned} puncte din ${points}!`)
+            h1.appendChild(text);
+            p.appendChild(h1);
+
+            (async () => {
+
+                if (await checkCourse() == true) {
+                    console.log(pointsEarned)
+                    addPointsToUser(pointsEarned)
+                    setCourseDone()
+                }
+                else console.log("Deja ai raspuns la intrebari")
+            })()
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        (async () => {
+            await sleep(5000)
+            let iFrame = document.getElementById("pdf");
+            let currentPageNum
+            if (iFrame.contentDocument) {
+                currentPageNum = iFrame.contentDocument.getElementById('pageNumber').value;
+            }
+            else console.log(currentPageNum);
+
+        })()
+
+       
+
+
+
+        displayCourse()
+        displayQuestion()
+
+    </script>
+
+</head>
+
+
+<body>
+    <nav>
+        <div class='head'>
+            </h4>Gardening Tutor</h4>
+        </div>
+        <div class="topnav" id="myTopnav">
+
+           
+            <a href="/home">Home</a>
+            <a href="/profile">Profile</a>
+            <a href="/" onclick="{deleteTokenFromCookie()}">Sign out</a>
+
+
+            <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+                &#9776;
+            </a>
+        </div>
+
+    </nav>
+
+    <h1 class="course" id="courseName">Course name</h1>
+    <div class="cursuri">
+
+        <iframe src="" allow="autoplay" id="pdf" style="border:none;" height="100%" width="100%"></iframe>
+    </div>
+
+    <div class="questions"></div>
+    <p class="question">Questions</p>
+
+    <div class="response"></div>
+
+
+    <button type="button" onclick="{checkAnswers()}">Submit</button>
+
+    </div>
+</body>

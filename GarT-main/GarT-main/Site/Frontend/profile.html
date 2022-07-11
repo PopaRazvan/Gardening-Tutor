@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="profile.css">
+    <title>Gardening Web Tutor</title>
+    <script src="Cookie.js"></script>
+    <script>
+        function myFunction() {
+            var x = document.getElementById("myTopnav");
+            if (x.className === "topnav") {
+                x.className += " responsive";
+            } else {
+                x.className = "topnav";
+            }
+        }
+        let token = getTokenFromCookie()
+        console.log(token)
+
+
+
+        async function displayFinishedCourses() {
+
+            let courses
+            let token = getTokenFromCookie()
+            let res = await fetch(`http://localhost:5000/api/user/courses/done`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*",
+                    "Authorization": `Bearer ${token}`
+                },
+
+            }).then((response) => response.json())
+                .then((data) => { courses = data })
+                .catch(error => console.log(error))
+
+            console.log(courses)
+
+            let section = document.getElementById("finishedCourses")
+            section.innerHTML = '';
+            section = document.getElementById("startedCourses")
+            section.innerHTML = '';
+            section = document.getElementById("scoreBoard")
+            section.innerHTML = '';
+
+            courses.forEach(course => {
+                displayCourse(course.id, course.name, course.url, "finishedCourses")
+            })
+        }
+
+        async function displayStartedCourses() {
+
+            let courses
+            let token = getTokenFromCookie()
+            let res = await fetch(`http://localhost:5000/api/user/courses`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*",
+                    "Authorization": `Bearer ${token}`
+                },
+
+            }).then((response) => response.json())
+                .then((data) => { courses = data })
+                .catch(error => console.log(error))
+
+            console.log(courses)
+
+            let section = document.getElementById("finishedCourses")
+            section.innerHTML = '';
+            section = document.getElementById("startedCourses")
+            section.innerHTML = '';
+            section = document.getElementById("scoreBoard")
+            section.innerHTML = '';
+
+            courses.forEach(course => {
+                displayCourse(course.id, course.name, course.url, "startedCourses")
+            })
+        }
+
+        function displayCourse(idCourse, nameCourse, urlCourse, idSection) {
+            let section = document.getElementById(idSection)
+
+            let div = document.createElement("div")
+            div.setAttribute("id", idCourse)
+            section.appendChild(div)
+
+            let h1 = document.createElement("h1")
+            h1.setAttribute("class", "heading")
+            h1.setAttribute("id", "CourseName")
+
+            let name = document.createTextNode(nameCourse)
+            h1.appendChild(name)
+            div.appendChild(h1)
+
+            let div1 = document.createElement("div")
+            div1.setAttribute("class", "cursuri")
+            div1.setAttribute("id", `curs${idCourse}`)
+
+            div.appendChild(div1)
+
+            let frame = document.createElement("iframe")
+            frame.setAttribute("src", urlCourse)
+            frame.setAttribute("id", "pdf")
+
+            div1.appendChild(frame)
+        }
+
+        async function changeName() {
+            let name = document.getElementById("userName").value
+            
+            let message
+
+            if (name!="") {
+                const body = {
+                    name: name
+                }
+
+                let res = await fetch(`http://localhost:5000/api/user/name`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Append": "*/*",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(body)
+                }).then((response) => response.json())
+                    .then((data) => { message = data.message })
+                    .catch(error => console.log(error))
+
+                console.log(message)
+
+            }
+        }
+
+        async function changeEmail() {
+            let email = document.getElementById("userEmail").value
+            let token = getTokenFromCookie()
+            let message
+          
+
+            if (email!="") {
+                const body = {
+                    email: email
+                }
+
+                let res = await fetch(`http://localhost:5000/api/user/email`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Append": "*/*",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(body)
+                }).then((response) => response.json())
+                    .then((data) => { message = data.message })
+                    .catch(error => console.log(error))
+
+                if (message == 'Email invalide!') {
+                    console.log(message)
+                    return false
+                }
+                return true
+            }
+            else return true
+        }
+
+
+        async function displayScoreBoard() {
+
+            let section = document.getElementById("finishedCourses")
+            section.innerHTML = '';
+            section = document.getElementById("startedCourses")
+            section.innerHTML = '';
+            section = document.getElementById("scoreBoard")
+            section.innerHTML = '';
+
+
+            let res = await fetch('http://localhost:5000/api/rss', {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*"
+                },
+            })
+                .then(response => response.text())
+                .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
+                .then(data => {
+                    console.log(data)
+                    const items = data.querySelectorAll("item");
+                    let html = ``;
+                    items.forEach(el => {
+                        html += `
+                        <li>${el.querySelector("title").innerHTML.replace("<![CDATA[", "").replace("]]>", "")} (${el.querySelector("points").innerHTML})</li>
+                        `
+                    })
+                    console.log(html)
+
+                    let ol = document.createElement("ol")
+                    ol.setAttribute("id", "usersList")
+                    section.appendChild(ol)
+
+                    ol.insertAdjacentHTML("beforeend", html);
+                })
+
+
+
+
+        }
+
+        async function displayName() {
+            let name
+            let token = getTokenFromCookie()
+
+            let res = await fetch(`http://localhost:5000/api/user/name`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*",
+                    "Authorization": `Bearer ${token}`
+                },
+
+            }).then((response) => response.json())
+                .then((data) => {
+                    name = data.message
+                })
+                .catch(error => console.log(error))
+
+            console.log(name)
+
+            document.getElementById('name').textContent = `Welcome ${name}`;
+
+
+        }
+
+        displayName()
+
+    </script>
+</head>
+
+<body>
+    <nav>
+        <div class='head'>
+            </h4>Gardening Tutor</h4>
+        </div>
+        <div class="topnav" id="myTopnav">
+            <a href="/home">Home</a>
+            <a href="/" onclick="{deleteTokenFromCookie()}">Sign out</a>
+            <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+                &#9776;
+            </a>
+        </div>
+    </nav>
+
+    <section class="category" id="category">
+
+        <h1 class="heading" id="name">Profilul meu</h1>
+
+
+
+        <div class="profile">
+            <div class="box">
+
+                <input type="file" id="file" name="image">
+                <img src="./images/blue.png" width="100%" height="100%">
+
+                <input type="text" placeholder="Name" name="" id="userName">
+                <input type="Email" placeholder="Email" name="" id="userEmail">
+                <button type="button" class="button" style="text-decoration: none; float:right; margin:10px 18.2% 0 0;"
+                    onclick="{
+                        (async()=>{ await changeName()
+                        if(await changeEmail()==true)
+                       location.href='/profile'
+                    })()
+                       
+                    }">DONE</button>
+
+            </div>
+        </div>
+        <div class="cursurinavbar">
+            <button type="button" class="button" onclick="{displayStartedCourses()}">Cursuri incepute</button>
+            <button type="button" class="button" onclick="{displayFinishedCourses()}">Cursuri terminate</button>
+            <button type="button" class="button" onclick="{displayScoreBoard()}">Clasament</button>
+        </div>
+
+    </section>
+
+    <section id="startedCourses"></section>
+    <section id="finishedCourses"></section>
+    <section id="scoreBoard">
+
+
+
+    </section>
+
+</body>

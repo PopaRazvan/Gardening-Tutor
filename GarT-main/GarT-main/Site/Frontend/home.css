@@ -1,0 +1,151 @@
+body{
+    background-color: darkseagreen;
+}
+
+.heading{
+    font-size: 3rem;
+    color: #444;
+    padding-left: 1rem;
+    border-left: .4rem solid green;
+    margin-top: 1rem;
+    margin-bottom: 3rem;
+
+}
+
+.btn{
+    display: inline-block;
+    margin-top: 1rem;
+    padding:.8rem 3rem;
+    background:green;
+    color:#fff;
+    font-size: 1.7rem;
+    cursor: pointer;
+}
+
+.btn:hover{
+    background:#333;
+}
+
+.category .box-container{
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: 10px;
+    gap:3rem;
+    position: relative;
+    width: 60%;
+    user-select: none;
+}
+
+.category .box-container .box{
+    position: relative;
+    height: 20rem;
+    overflow: hidden;
+    border:.1rem solid rgba(0,0,0,.3);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.1);
+}
+
+.category .box-container .box iframe{
+    height: 100%;
+    width:100%;
+    object-fit: cover;
+    user-select: none;
+}
+
+.category .box-container .box .content{
+    position: absolute;
+    bottom: -5.5rem;
+    background: rgb(168, 214, 168);
+    border-top:.1rem solid rgba(0,0,0,.3);
+    text-align: center;
+    padding:.5rem 0;
+    width:100%;
+}
+
+.category .box-container .box:hover .content{
+    bottom:0;
+}
+
+.category .box-container .box .content h3{
+    color:#333;
+    font-size: 2.5rem;
+    padding:.5rem 0;
+}
+
+.category .box-container .box .content .btn{
+    margin-bottom: 1.3rem;
+}
+
+.contact .row{
+    display: flex;
+    flex-wrap: wrap;
+    border:.1rem solid rgba(0,0,0,.3);
+}
+
+.contact .row .map{
+    width:100%;
+    flex:1 1 40rem;
+}
+
+.contact .row form{
+    padding:2rem;
+    flex:1 1 40rem;
+
+}
+
+.contact .row form .inputBox{
+    position: relative;
+
+}
+
+.contact .row form .inputBox input,
+.contact .row form .inputBox textarea{
+    width:100%;
+    border-bottom: .1rem solid rgba(0,0,0,.3);
+    padding:1rem 0;
+    margin:1.5rem 0;
+    font-size: 1.7rem;
+    text-transform: none;
+    color:#333;
+}
+
+.contact .row form .inputBox textarea{
+    resize: none;
+    height:15rem;
+}
+
+.contact .row form .inputBox input:focus,
+.contact .row form .inputBox textarea:focus{
+    border-color: green;
+}
+
+.contact .row form .inputBox label{
+    position: absolute;
+    top:-0.4rem; left:0;
+    font-size: 1.7rem;
+}
+
+/*.contact .row form .inputBox input:focus ~ label,
+.contact .row form .inputBox textarea:focus ~ label,
+.contact .row form .inputBox input:valid ~ label,
+.contact .row form .inputBox textarea:valid ~ label{
+    top:-.1rem;
+    font-size: 1.5rem;
+    color:#666;
+    background: darkseagreen;
+}*/
+
+.myProgress {
+    width: 100%;
+    background-color: grey;
+}
+
+.myBar {
+
+    background-color: green;
+    width: 10%;
+    height: 30px;
+    background-color: #04AA6D;
+    text-align: center; /* To center it horizontally (if you want) */
+    line-height: 30px; /* To center it vertically */
+    color: white;
+}

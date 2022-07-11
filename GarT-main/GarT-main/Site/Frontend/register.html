@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="navStyle.css">
+  <link rel="stylesheet" href="loginStyle.css">
+  <title>Register</title>
+
+  
+  <script>
+
+    function myFunction() {
+      var x = document.getElementById("myTopnav");
+      if (x.className === "topnav") {
+        x.className += " responsive";
+      } else {
+        x.className = "topnav";
+      }
+    }
+
+    function validateEmail() {
+      const email = document.getElementById("email").value;
+      const regx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (regx.test(email)) {
+        console.log("Correct email! " + email);
+        return true;
+      }
+      else {
+        console.log("Incorect email! " + email);
+      }
+    }
+
+    function validatePassword() {
+      const password = document.getElementById("password").value;
+      const repeatPassword = document.getElementById("repeatPassword").value;
+
+      if (password == "") {
+        console.log("Incorect password!" + email);
+        return false;
+      }
+      else
+        if (password.length < 8) {
+          console.log("Your password must be at at least 8 characters long");
+          return false;
+        }
+        else if (password !== repeatPassword) {
+          console.log("Passwords are not the same");
+          return false;
+        }
+
+      return true;
+    }
+
+    async function validateRegister() {
+
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const repeatPassword = document.getElementById("repeatPassword").value;
+
+      if (validateEmail() && validatePassword()) {
+
+        const data = { name: name, email: email, password: password, repeatPassword: repeatPassword };
+
+        console.log(data);
+        let message;
+
+        let res = await fetch("http://localhost:5000/api/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Append": "*/*"
+          },
+          body: JSON.stringify(data)
+        }).then((response) => response.json())
+          .then((data) => {
+            message = data.message
+          })
+          .catch(error => console.log(error))
+
+        if (message === 'Register completed!')
+          return true;
+        else {
+          console.log(message)
+          return false;
+        }
+      }
+    }
+
+  </script>
+</head>
+
+<body>
+  <nav>
+    <div class='head'>
+      <h4>Gardening Tutor</h4>
+    </div>
+
+    <div class="topnav" id="myTopnav">
+
+      <a href="/">Home</a>
+
+    </div>
+  </nav>
+  <div class="body-text">
+    <h1>Register</h1>
+  </div>
+
+  <div class="login-page">
+    <div class="form">
+      <form class="register-form">
+        <input id="name" type="text" placeholder="name" />
+        <input id="email" type="text" name="email" placeholder="email address" />
+
+        <input id="password" type="password" placeholder="password" />
+        <input id="repeatPassword" type="password" placeholder="repeat password" />
+
+        <button onclick="{
+        (async () => {
+        const valide=await validateRegister()
+        console.log(valide)
+
+        if(valide===true)
+            location.href='/login';  
+
+      })()      
+        }"type="button">create</button>
+        <p class="message">Already registered? <a href="/login">Sign In</a></p>
+      </form>
+
+    </div>
+  </div>
+
+</body>
+
+</html>

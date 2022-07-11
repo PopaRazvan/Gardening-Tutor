@@ -1,0 +1,51 @@
+create table users
+(
+	id int NOT NULL PRIMARY KEY,
+	name VARCHAR(20),
+    email VARCHAR(30),
+	password VARCHAR(500),
+	points int NOT NULL,
+	admin boolean
+);
+
+create table courses
+(
+    id int NOT NULL PRIMARY KEY,
+    name varchar(150) NOT NULL,
+    url varchar(65535) NOT NULL,
+	points int NOT NULL
+);
+
+create table questions
+(
+	id int NOT NULL PRIMARY KEY,
+	id_course int NOT NULL,
+	name varchar(500),
+	answer1 varchar(200),
+	answer2 varchar(200),
+	answer3 varchar(200),
+	answer4 varchar(200),
+	corect_answer int NOT NULL,
+	points int NOT NULL,
+	FOREIGN KEY (id_course) REFERENCES course(id)
+);
+
+create table continue_course
+(
+    id int NOT NULL PRIMARY KEY,
+    id_person int NOT NULL,
+	id_course int NOT NULL,
+	progress int,
+	done boolean,
+	FOREIGN KEY (id_person) REFERENCES person(id),
+	FOREIGN KEY (id_course) REFERENCES course(id)
+);
+
+create table messages
+(
+	id int NOT NULL PRIMARY KEY,
+	id_user int,
+	name VARCHAR(20),
+    email VARCHAR(30),
+	message VARCHAR(500)
+)

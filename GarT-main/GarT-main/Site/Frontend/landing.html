@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="navStyle.css">
+    <link rel="stylesheet" href="indexStyle.css">
+    <title>Gardening Web Tutor</title>
+
+    <script>
+        function myFunction() {
+            var x = document.getElementById("myTopnav");
+            if (x.className === "topnav") {
+                x.className += " responsive";
+            } else {
+                x.className = "topnav";
+            }
+        }
+    </script>
+</head>
+
+
+<body>
+    <nav>
+        <div class='head'>
+            </h4>Gardening Tutor</h4>
+        </div>
+        <div class="topnav" id="myTopnav">
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+            <a href="/raport">About</a>
+            <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+                &#9776;
+            </a>
+        </div>
+    </nav>
+ 
+
+    <div class="Landing-Image">
+    <img src="LandingImage.jpg">
+    <div class="center">
+        <h1>Grow whit us!</h1>
+        <h4>Gardening Tutor este un site</h4>
+        <h4>care ofera cursuri despre gradinarit!</h4> 
+        <button class="learningButton" onclick="{location.href='/home'}">Start learning now!</button>
+    </div>
+   
+    </div>
+</body>
+
+</html>

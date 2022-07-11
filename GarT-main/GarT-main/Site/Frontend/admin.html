@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="navStyle.css">
+    <link rel="stylesheet" href="admin.css">
+    <title>Gardening Web Tutor</title>
+
+    <script src="Cookie.js"></script>
+
+    <script>
+        function myFunction() {
+            var x = document.getElementById("myTopnav");
+            if (x.className === "topnav") {
+                x.className += " responsive";
+            } else {
+                x.className = "topnav";
+            }
+        }
+
+        let switchDisplayQuestions = []
+        let switchDisplayAddQuestion = []
+
+        async function displayCourses() {
+
+            let courses
+
+            let res = await fetch(`http://localhost:5000/api/courses`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*"
+                },
+
+            }).then((response) => response.json())
+                .then((data) => { courses = data })
+                .catch(error => console.log(error))
+
+            let section = document.getElementById("courses")
+            section.innerHTML = '';
+
+            courses.forEach(course => {
+                displayCourse(course.id, course.name, course.url)
+            })
+        }
+
+        function displayCourse(idCourse, nameCourse, urlCourse) {
+            let section = document.getElementById("courses")
+            switchDisplayQuestions[idCourse] = 0
+            switchDisplayAddQuestion[idCourse] = 0
+
+            let div = document.createElement("div")
+            div.setAttribute("id", idCourse)
+            section.appendChild(div)
+
+            let h1 = document.createElement("h1")
+            h1.setAttribute("class", "heading")
+            h1.setAttribute("id", "CourseName")
+
+            let name = document.createTextNode(nameCourse)
+            h1.appendChild(name)
+            div.appendChild(h1)
+
+            let div1 = document.createElement("div")
+            div1.setAttribute("class", "cursuri")
+            div1.setAttribute("id", `curs${idCourse}`)
+
+            div.appendChild(div1)
+
+            let frame = document.createElement("iframe")
+            frame.setAttribute("src", urlCourse)
+            frame.setAttribute("id", "pdf")
+
+            div1.appendChild(frame)
+
+
+
+            let buttonQuestion = document.createElement("button")
+            buttonQuestion.setAttribute("class", "button")
+            buttonQuestion.setAttribute("style", "text-decoration: none; float:right; margin:10px 18.2% 0 0;")
+            buttonQuestion.addEventListener("click", function (event) {
+                (async () => {
+
+                    if (switchDisplayQuestions[idCourse] == 0) {
+
+                        await displayQuestions(idCourse)
+                        switchDisplayQuestions[idCourse] = 1
+
+                    }
+                    else {
+                        let ul = document.getElementById(`question${idCourse}`)
+                        if (ul != null)
+                            ul.remove()
+                        switchDisplayQuestions[idCourse] = 0
+                    }
+                })()
+
+            });
+
+            let textQuestion = document.createTextNode("View Questions")
+            buttonQuestion.appendChild(textQuestion)
+            div1.appendChild(buttonQuestion)
+
+            let buttonRemove = document.createElement("button")
+            buttonRemove.setAttribute("class", "button")
+            buttonRemove.setAttribute("style", "text-decoration: none; float:right; margin:10px 18.2% 0 0;")
+            buttonRemove.addEventListener("click", function (event) {
+                (async () => {
+                    el = document.getElementById(idCourse)
+                    el.remove()
+                    await removeCourse(idCourse)
+
+                })()
+            });
+            let textRemove = document.createTextNode("Delete")
+            buttonRemove.appendChild(textRemove)
+            div1.appendChild(buttonRemove)
+
+            let buttonAddQuestion = document.createElement("button")
+            buttonAddQuestion.setAttribute("class", "button")
+            buttonAddQuestion.setAttribute("style", "text-decoration: none; float:right; margin:10px 18.2% 0 0;")
+            buttonAddQuestion.addEventListener("click", function (event) {
+                (async () => {
+
+                    if (switchDisplayAddQuestion[idCourse] == 0) {
+
+                        await displayAddQuestion(idCourse)
+                        switchDisplayAddQuestion[idCourse] = 1
+
+                    }
+                    else {
+                        let ul = document.getElementById(`form${idCourse}`)
+                        if (ul != null)
+                            ul.remove()
+                        switchDisplayAddQuestion[idCourse] = 0
+                    }
+                })()
+
+            });
+            let textAdd = document.createTextNode("Add Question")
+            buttonAddQuestion.appendChild(textAdd)
+            div1.appendChild(buttonAddQuestion)
+        }
+
+
+
+        async function displayAddQuestion(idCourse) {
+
+            switchDisplayQuestions[idCourse] = 0
+
+            let el = document.getElementById(`question${idCourse}`)
+
+            if (el != null)
+                el.remove()
+
+            let div = document.getElementById(`curs${idCourse}`)
+            let form = document.createElement(`label`)
+            form.setAttribute("id", `form${idCourse}`)
+            form.setAttribute("class", `addQuestion`)
+            div.appendChild(form)
+
+            let div1 = document.createElement("inputBox")
+            let h2_1 = document.createElement("h2")
+            let text1 = document.createTextNode("Question")
+            h2_1.appendChild(text1)
+            let input1 = document.createElement("input")
+            input1.setAttribute("type", "text")
+            input1.setAttribute("id", "input1")
+            div1.appendChild(h2_1)
+            div1.appendChild(input1)
+            form.appendChild(div1)
+
+            let div2 = document.createElement("inputBox")
+            let h2_2 = document.createElement("h2")
+            let text2 = document.createTextNode("First Answer")
+            h2_2.appendChild(text2)
+            let input2 = document.createElement("input")
+            input2.setAttribute("type", "text")
+            input2.setAttribute("id", "input2")
+            div2.appendChild(h2_2)
+            div2.appendChild(input2)
+            form.appendChild(div2)
+
+            let div3 = document.createElement("inputBox")
+            let h2_3 = document.createElement("h2")
+            let text3 = document.createTextNode("Second Answer")
+            h2_3.appendChild(text3)
+            let input3 = document.createElement("input")
+            input3.setAttribute("type", "text")
+            input3.setAttribute("id", "input3")
+            div3.appendChild(h2_3)
+            div3.appendChild(input3)
+            form.appendChild(div3)
+
+            let div4 = document.createElement("inputBox")
+            let h2_4 = document.createElement("h2")
+            let text4 = document.createTextNode("Third Answer")
+            h2_4.appendChild(text4)
+            let input4 = document.createElement("input")
+            input4.setAttribute("type", "text")
+            input4.setAttribute("id", "input4")
+            div4.appendChild(h2_4)
+            div4.appendChild(input4)
+            form.appendChild(div4)
+
+            let div5 = document.createElement("inputBox")
+            let h2_5 = document.createElement("h2")
+            let text5 = document.createTextNode("Fourth Answer")
+            h2_5.appendChild(text5)
+            let input5 = document.createElement("input")
+            input5.setAttribute("type", "text")
+            input5.setAttribute("id", "input5")
+            div5.appendChild(h2_5)
+            div5.appendChild(input5)
+            form.appendChild(div5)
+
+            let div6 = document.createElement("inputBox")
+            let h2_6 = document.createElement("h2")
+            let text6 = document.createTextNode("Correct Answer")
+            h2_6.appendChild(text6)
+            let input6 = document.createElement("input")
+            input6.setAttribute("type", "number")
+            input6.setAttribute("id", "input6")
+            div6.appendChild(h2_6)
+            div6.appendChild(input6)
+            form.appendChild(div6)
+
+
+            let div7 = document.createElement("inputBox")
+            let h2_7 = document.createElement("h2")
+            let text7 = document.createTextNode("Points")
+            h2_7.appendChild(text7)
+            let input7 = document.createElement("input")
+            input7.setAttribute("type", "number")
+            input7.setAttribute("id", "input7")
+            div7.appendChild(h2_7)
+            div7.appendChild(input7)
+            form.appendChild(div7)
+
+            let br = document.createElement("br")
+            form.appendChild(br)
+
+            let submit = document.createElement("button")
+            submit.setAttribute("type", "button")
+            submit.setAttribute("class", "button")
+
+            let text8 = document.createTextNode("Submit")
+            submit.appendChild(text8)
+            submit.addEventListener("click", function (event) {
+                (async () => {
+                    let input1 = document.getElementById("input1").value;
+                    let input2 = document.getElementById("input2").value;
+                    let input3 = document.getElementById("input3").value;
+                    let input4 = document.getElementById("input4").value;
+                    let input5 = document.getElementById("input5").value;
+                    let input6 = document.getElementById("input6").value;
+                    let input7 = document.getElementById("input7").value;
+
+                    await addQuestionToCourse(idCourse, input1, input2, input3, input4, input5, input6, input7)
+                })()
+            });
+            form.appendChild(submit)
+
+        }
+
+        async function displayQuestions(idCourse) {
+            let el = document.getElementById(`form${idCourse}`)
+
+            if (el != null)
+                el.remove()
+
+            switchDisplayAddQuestion[idCourse] = 0
+
+            let questions
+
+            let res = await fetch(`http://localhost:5000/api/course/${idCourse}/questions`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*"
+                },
+
+            }).then((response) => response.json())
+                .then((data) => {
+                    questions = data
+                })
+                .catch(error => console.log(error))
+
+
+            let div = document.getElementById(`curs${idCourse}`)
+            let ul = document.createElement('label')
+            ul.setAttribute("id", `question${idCourse}`)
+            div.appendChild(ul)
+
+            questions.forEach(question => {
+                let li = document.createElement('ol')
+                let name = document.createTextNode(question.name)
+                li.appendChild(name)
+                li.setAttribute('id', `${question.number}`)
+                ul.appendChild(li)
+
+                let ul1 = document.createElement('ul')
+                let answer1 = document.createTextNode(question.answer1)
+                ul1.appendChild(answer1)
+                li.appendChild(ul1)
+
+
+                let ul2 = document.createElement('ul')
+                let answer2 = document.createTextNode(question.answer2)
+                ul2.appendChild(answer2)
+
+                li.appendChild(ul2)
+
+                let ul3 = document.createElement('ul')
+                let answer3 = document.createTextNode(question.answer3)
+                ul3.appendChild(answer3)
+
+                li.appendChild(ul3)
+
+                let ul4 = document.createElement('ul')
+                let answer4 = document.createTextNode(question.answer4)
+                ul4.appendChild(answer4)
+
+                li.appendChild(ul4)
+
+
+            })
+        }
+
+        async function addQuestionToCourse(idCourse, name, answer1, answer2, answer3, answer4, correctAnswer, points) {
+
+
+            const body = {
+                name: name,
+                answer1: answer1,
+                answer2: answer2,
+                answer3: answer3,
+                answer4: answer4,
+                correctAnswer: correctAnswer,
+                points: points
+            }
+
+            let res = await fetch(`http://localhost:5000/api/course/${idCourse}/question`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*"
+                },
+                body: JSON.stringify(body)
+
+            }).then((response) => response.json())
+                .catch(error => console.log(error))
+        }
+
+        async function addNewCourse(name, url, points) {
+            const body = {
+                name: name,
+                url: url,
+                points: points
+            }
+
+            let res = await fetch(`http://localhost:5000/api/course`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*"
+                },
+                body: JSON.stringify(body)
+
+            }).then((response) => response.json())
+                .catch(error => console.log(error))
+
+
+        }
+
+        async function removeCourse(idCourse) {
+            let res = await fetch(`http://localhost:5000/api/course/${idCourse}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*"
+                },
+
+
+            }).then((response) => response.json())
+                .catch(error => console.log(error))
+        }
+  
+ //       async function displayUsers() {
+ //           let users
+ //           let res = await fetch(`http://localhost:5000/api/users`, {
+ //               method: "GET",
+ //               headers: {
+ //                   "Content-Type": "application/json",
+ ///                  "Append": "*/*"
+ //               },
+//
+//
+  //          }).then((response) => response.json())
+ //               .then(data => { users = data })
+ //               .catch(error => console.log(error))
+//
+//
+//            let section = document.getElementById("users")
+ //           let ol = document.createElement("ol")
+ //           ol.setAttribute("id","usersList")
+     //       section.appendChild(ol)
+//
+      //      users.forEach(user => {
+      //          let li = document.createElement("li")
+      //          let name = document.createTextNode(`${user.name} (${user.points})`)
+      //          li.appendChild(name)
+       //         ol.appendChild(li)
+
+       //     })
+      //  }
+
+        async function displayMessages() {
+            let messages
+            let res = await fetch(`http://localhost:5000/api/messages`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*"
+                },
+            }).then((response) => response.json())
+                .then(data => { messages = data })
+                .catch(error => console.log(error))
+
+            console.log(messages)
+
+            let section = document.getElementById("messages")
+            messages.forEach(message => {
+
+                let div = document.createElement("div")
+                div.setAttribute("class", "message")
+
+                let h4 = document.createElement("h4")
+                let name = document.createTextNode(message.name)
+                h4.appendChild(name)
+
+                let span = document.createElement("span")
+                let email = document.createTextNode(` -${message.email}`)
+                span.appendChild(email)
+
+                let br = document.createElement("br")
+
+                let p = document.createElement("p")
+                let messageTxt = document.createTextNode(message.message)
+                p.appendChild(messageTxt)
+
+                section.appendChild(div)
+                div.appendChild(h4)
+                div.appendChild(span)
+                div.appendChild(br)
+                div.appendChild(p)
+            })
+        }
+
+        async function displayRssFeed() {
+
+            let res = await fetch('http://localhost:5000/api/rss', {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*"
+                },
+            })
+                .then(response => response.text())
+                .then(str => new window.DOMParser().parseFromString(str, "text/xml"))
+                .then(data => {
+                    console.log(data)
+                    const items = data.querySelectorAll("item");
+                    let html = ``;
+                    items.forEach(el => {
+                        html += `
+                        <li>${el.querySelector("title").innerHTML.replace("<![CDATA[", "").replace("]]>", "")} (${el.querySelector("points").innerHTML})</li>
+                        `
+                    })
+                    console.log(html)
+                    let ol=document.getElementById("usersList")
+                    ol.insertAdjacentHTML("beforeend", html);
+                })
+                
+
+        }
+
+        (async () => {
+            //await displayUsers()
+            await displayCourses()
+            await displayMessages()
+            await displayRssFeed()
+        })()
+
+    </script>
+
+</head>
+
+
+<body>
+    <nav>
+        <div class='head'>
+            </h4>Gardening Tutor</h4>
+        </div>
+        <div class="topnav" id="myTopnav">
+
+            <h1>Welcome admin</h1>
+            <a href="/">Sign out</a>
+
+
+            <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+                &#9776;
+            </a>
+        </div>
+    </nav>
+
+    <section id="users">
+        <h1 class="heading">Score Users</h1>
+      <ol id="usersList"></ol>
+    </section>
+
+    <section id="courses">
+
+
+    </section>
+
+    <section id="addCourse">
+        <h1 class="heading">Add new Course</h1>
+        <form id="addNewCourse">
+
+            <div class="inputBox">
+                <h2>Name</h2>
+                <input type="text" id="inputCourse1" required>
+
+            </div>
+            <div class="inputBox">
+                <h2>URL</h2>
+                <input type="text" id="inputCourse2" required>
+
+            </div>
+            <div class="inputBox">
+                <h2>Points</h2>
+                <input type="text" id="inputCourse3" required>
+            </div>
+
+            <button type="button" class="button" onclick="{
+
+             (async()=>{
+                 let name = document.getElementById('inputCourse1').value
+                 let url = document.getElementById('inputCourse2').value
+                 let points = document.getElementById('inputCourse3').value
+
+                 await addNewCourse(name,url,points)
+                  displayCourses()
+                })()
+                 
+            }">
+                Add Course
+            </button>
+
+        </form>
+    </section>
+
+    <div id="messages">
+        <h1 class="heading">Messages</h1>
+
+    </div>
+</body>

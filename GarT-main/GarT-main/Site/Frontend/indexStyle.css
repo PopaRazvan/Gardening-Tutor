@@ -1,0 +1,56 @@
+img {
+    display: flex;
+    align-items: top;
+    justify-content: top;
+    vertical-align: middle;
+    height: auto;
+    max-width: 100%;
+    border: 0;
+    aspect-ratio: auto 1920 / 1080;
+}
+
+.Landing-Image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.center {
+    position: absolute;
+    text-align: center;
+}
+
+.center {
+
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    font-size: 2vw;
+    letter-spacing: 6px;
+    word-spacing: 0px;
+    color: #ffffff;
+    font-weight: 700;
+
+    font-style: italic;
+    font-variant: normal;
+    text-transform: none;
+}
+
+.learningButton {
+    margin-top: 1vw;
+	background-color:#eae0c2;
+	border-radius:42px;
+	cursor:pointer;
+	color:#459725;
+	font-size:3vw;
+	font-weight:bold;
+	padding:0.5vw 8vw;
+	text-decoration:none;
+}
+.learningButton:hover {
+	background:linear-gradient(to bottom, #ccc2a6 5%, #eae0c2 100%);
+	background-color:#ccc2a6;
+}
+.learningButton:active {
+	position:relative;
+	top:1px;
+}

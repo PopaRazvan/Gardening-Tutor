@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="navStyle.css">
+    <link rel="stylesheet" href="home.css">
+    <title>Gardening Web Tutor</title>
+
+    <script src="Cookie.js"></script>
+
+    <script>
+        function myFunction() {
+            var x = document.getElementById("myTopnav");
+            if (x.className === "topnav") {
+                x.className += " responsive";
+            } else {
+                x.className = "topnav";
+            }
+        }
+
+
+
+       // (async () => {
+       //     console.log(await checkIfUserIsAdmin(getTokenFromCookie()))
+       //     if(await validateToken(getTokenFromCookie())==false)
+       //     location.href="/"
+       //     else if(await checkIfUserIsAdmin(getTokenFromCookie())==true)
+       //     location.href="/admin"
+       // })()
+
+       
+
+        async function startNewCourse(idCourse) {
+            let message
+            let token = getTokenFromCookie()
+            let res = await fetch(`http://localhost:5000/api/user/course/${idCourse}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*",
+                    "Authorization": `Bearer ${token}`
+                },
+
+            }).then((response) => response.json())
+                .then((data) => {
+                    message = data.message
+                })
+                .catch(error => console.log(error))
+
+
+        }
+
+        async function sendMessage()
+        {
+            let message=document.getElementById("message").value
+            let messageRes
+      
+            const body={
+                message:message
+            }
+            let token = getTokenFromCookie()
+
+            let res = await fetch(`http://localhost:5000/api/user/message`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(body)
+
+            }).then((response) => response.json())
+                .then((data) => {
+                   messageRes=data.message
+                })
+                .catch(error => console.log(error))
+
+                console.log(messageRes)
+
+        }
+
+        async function displayName() {
+            let name
+            let token = getTokenFromCookie()
+
+            let res = await fetch(`http://localhost:5000/api/user/name`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*",
+                    "Authorization": `Bearer ${token}`
+                },
+
+            }).then((response) => response.json())
+                .then((data) => {
+                    name = data.message
+                })
+                .catch(error => console.log(error))
+
+            console.log(name)
+
+            document.getElementById('name').textContent = `Welcome ${name}`;
+
+
+        }
+
+        async function displayAllCourses() {
+
+            let courses
+
+            let res = await fetch(`http://localhost:5000/api/courses`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*"
+                },
+                
+
+            }).then((response) => response.json())
+                .then((data) => {
+                    courses = data
+                })
+                .catch(error => console.log(error))
+
+            let section = document.getElementById('cursuri')
+            let div = document.createElement('div')
+            div.setAttribute("class", "box-container")
+            section.appendChild(div)
+
+            courses.forEach(course => {
+                let div1 = document.createElement("div")
+                div1.setAttribute("class", "box")
+                div1.addEventListener("click", function (event) {
+                    console.log(course.id);
+                    saveTheCookieForCourse(course.id);
+                    (async () => {
+                        await startNewCourse(course.id)
+                        location.href = `/course?id=${course.id}`;
+                    })();
+
+                });
+                div.appendChild(div1)
+
+                let frame = document.createElement("iframe")
+                frame.setAttribute("src", course.url)
+                div1.appendChild(frame)
+
+                let div2 = document.createElement("div")
+                div2.setAttribute("class", "content")
+                div1.appendChild(div2)
+
+                let h3 = document.createElement("h3")
+                let text = document.createTextNode(course.name)
+                h3.appendChild(text)
+                div2.appendChild(h3)
+            });
+        }
+
+        async function displayContinueCourses() {
+
+            let courses
+            let token = getTokenFromCookie()
+
+            let res = await fetch(`http://localhost:5000/api/user/courses`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Append": "*/*",
+                    "Authorization": `Bearer ${token}`
+                },
+
+            }).then((response) => response.json())
+                .then((data) => {
+                    courses = data
+                })
+                .catch(error => console.log(error))
+
+            let section = document.getElementById('category')
+            let div = document.createElement('div')
+            div.setAttribute("class", "box-container")
+            section.appendChild(div)
+
+            console.log(courses)
+
+            courses.forEach(course => {
+                let div1 = document.createElement("div")
+                div1.setAttribute("class", "box")
+
+                div1.addEventListener("click", function (event) {
+                    
+                    location.href = `/course?id=${course.id}`;
+                });
+
+                div.appendChild(div1)
+
+                let frame = document.createElement("iframe")
+                frame.setAttribute("src", course.url)
+                div1.appendChild(frame)
+
+                let div2 = document.createElement("div")
+                div2.setAttribute("class", "content")
+                div1.appendChild(div2)
+
+                let h3 = document.createElement("h3")
+                let text = document.createTextNode(course.name)
+                h3.appendChild(text)
+                div2.appendChild(h3)
+
+
+            });
+        }
+
+        (async()=>{displayAllCourses()
+        displayContinueCourses()
+        displayName()})()
+        
+
+    </script>
+
+</head>
+
+
+<body>
+    <nav>
+        <div class='head'>
+            </h4>Gardening Tutor</h4>
+        </div>
+        <div class="topnav" id="myTopnav">
+
+            <h1 id="name"></h1>
+            <a href="/profile">Profile</a>
+            <a href="#contact">Contact us</a>
+            <a href="/" onclick="{deleteTokenFromCookie()}">Sign out</a>
+
+
+            <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+                &#9776;
+            </a>
+        </div>
+    </nav>
+
+
+    <section class="category" id="category">
+
+        <h1 class="heading"> Continua Cursul</h1>
+
+    </section>
+
+
+    <section class="category" id="cursuri">
+
+        <h1 class="heading"> Incepe un curs nou</h1>
+
+    </section>
+
+    <section class="contact" id="contact">
+
+        <h1 class="heading">Get in touch</h1>
+
+        <div class="row">
+
+            <form action="">
+
+            
+                <div class="inputBox">
+                    <textarea required name="" id="message" cols="30" rows="10"></textarea>
+                    <label >Message</label>
+                </div>
+
+                <button type="button" class="btn" onclick="{sendMessage()}">send message</button>  
+
+            </form>
+
+        </div>
+
+
+    </section>
+
+
+</body>
